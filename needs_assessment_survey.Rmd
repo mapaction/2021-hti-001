@@ -1,0 +1,130 @@
+---
+title: '<img src="ma_logo.png" style="height:75px;float:left;" />'
+pagetitle: 'Haiti Needs Assessment'
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+    toc_depth: 4
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+editor_options:
+  chunk_output_type: inline
+---
+
+<br>
+<br>
+<br>
+
+## Haiti Needs Assessment: Survey Analysis
+Last updated `r Sys.Date()`
+
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+library(kableExtra)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(janitor)
+library(stringr)
+knitr::opts_chunk$set(echo = FALSE) # do not print code by default
+knitr::opts_chunk$set(include = FALSE) # do not print output by default
+```
+
+### Summary
+
+This document provides an overview of an initial rapid needs assessment of affected populations in Haiti. This survey contains responses from 231 affected stakeholders, surveyed between August 18th - August 23rd, 2021. Responses provide an overview of sectoral needs at the household level.
+
+### Basic respondent information
+
+Surveyed respondents are located in either rural, urban, or IDP camp locations. The majority of respondents are in rural locations (182), followed by urban locations (47), and with 2 in IDP camps. 
+
+```{r plt_location, dpi=300, include=T, message=FALSE, warning=FALSE, fig.height=3, fig.align="center", fig.cap='Location of survey respondents'}
+
+setwd("C:/Users/Hannah/Desktop/hti-needs-assessment")
+
+data_dir <- "G:/Shared drives/country-responses/2021-hti-001/GIS/2_Active_Data/205_assm/"
+f_name <- "hti_assm_srvy_tab_s2_OCHA_hh_BASE_Outil_Evaluation_initiale_rapide_des_besoins.xlsx"
+data <- read_excel(paste0(data_dir, f_name))
+
+ggplot(data, aes(x = `Lieu (village/communauté)`))+
+  geom_bar(fill = "#0E4D64")+
+  ylab('Number of respondents') +
+  #scale_fill_manual(values=c("#0A2F51","#0E4D64", '#137177', '#188977', '#1D9A6C'), na.value = "red") +
+  theme_minimal()
+```
+
+Looking at the proportion broken down by age and sex, we see that the respondent demographics are roughly evenly divided. However, there's a notable proportion of respondents aged 55 or greater located in urban locations.
+
+```{r plt_location_detail, fig.show='hold', out.width= "50%", dpi=300, include=T, message=FALSE, warning=FALSE, fig.height=8, fig.align="center", fig.cap='Location of survey respondents, broken down by age (left) and sex (right).'}
+
+
+ggplot(data, aes(x = `Lieu (village/communauté)`, fill = `Âge de la personne interrogée`))+
+  geom_bar(position='fill')+
+  ylab('Proportion of respondents') +
+  scale_fill_manual(values=c("#0A2F51","#0E4D64", '#137177', '#188977', '#1D9A6C'), na.value = "red") +
+  theme_minimal() + 
+  stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position=position_fill(vjust=0.5), colour="white")+
+  theme(legend.position="bottom")
+
+ggplot(data, aes(x = `Lieu (village/communauté)`, fill = `Sexe de la personne interrogée`))+
+  geom_bar(position='fill')+
+  ylab('Proportion of respondents') +
+  scale_fill_manual(values=c("#EFC6B0","#B3734F"), na.value = "red") +
+  theme_minimal() + 
+  stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position=position_fill(vjust=0.5), colour="white")+
+  theme(legend.position="bottom")
+
+```
+
+### Top priorities
+
+Most respondents are most in need of housing, food, and sanitation. 
+
+```{r top_needs, dpi=300, include=T, message=FALSE, warning=FALSE, fig.height=3, fig.align="center", fig.cap='Summary of top needs'}
+
+# What are your 3 biggest needs?
+df_priorities <- data %>% 
+  select(c(18:26)) %>% 
+  adorn_totals('row')
+
+df_priority_total <- data.frame(t(df_priorities)) %>% select('X232')
+df_priority_total <- cbind(Priority = str_split_fixed(rownames(df_priority_total), '/', 2)[,2], df_priority_total)[-1,]
+df_priority_total <- df_priority_total %>% rename(Total = X232)
+df_priority_total$Total <- as.numeric(df_priority_total$Total)
+
+plt_priority <- ggplot(df_priority_total, aes(x = reorder(Priority, Total), y = Total)) + 
+  geom_bar(stat = 'identity', fill = "#0E4D64") +
+  theme_minimal() +
+  xlab('Priority') +
+  ylab('Number of respondents') + 
+  coord_flip()
+plt_priority
+
+
+```
+
+To do: 
+- What type of aid do you prefer?
+
+
+### WASH
+
+- Where do you collect potable water?
+- How many L of water do you collect in a day? Is it enough? What do you do with this water?
+
+### Food safety
+
+### Housing / non-food items
+
+### Means of subsistence 
+
+### Protection
+
+### Communication
