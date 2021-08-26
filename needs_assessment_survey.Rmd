@@ -2,14 +2,14 @@
 title: '<img src="ma_logo.png" style="height:75px;float:left;" />'
 pagetitle: 'Haiti Needs Assessment'
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
   html_document:
     df_print: paged
     toc: yes
     toc_float: yes
     toc_depth: 4
-  pdf_document:
-    toc: yes
-    toc_depth: '4'
 editor_options:
   chunk_output_type: inline
 ---
@@ -19,9 +19,9 @@ editor_options:
 <br>
 
 ## Haiti Needs Assessment: Survey Analysis
-Last updated `r Sys.Date()`
+By MapAction, last updated `r Sys.Date()`
 
-**This page is a work in progress.**
+**This page is a work in progress. Only a subset of the survey data has been summarized.**
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
 library(kableExtra)
@@ -37,19 +37,23 @@ knitr::opts_chunk$set(include = FALSE) # do not print output by default
 
 ### Summary
 
-This page provides an overview of an initial rapid needs assessment of affected populations in Haiti. This survey contains responses from 231 affected stakeholders, surveyed between August 18th - August 23rd, 2021. Responses provide an overview of sectoral needs at the household level.
+This page provides an overview of an initial rapid needs assessment of affected populations in Haiti. This survey contains responses from 307 affected stakeholders, surveyed between August 18th - August 24th, 2021. Responses provide an overview of sectoral needs at the household level.
 
 ### Basic respondent information
 
-Surveyed respondents are located in either rural, urban, or IDP camp locations. The majority of respondents are in rural locations (182), followed by urban locations (47), and with 2 in IDP camps. 
+Surveyed respondents are located in either rural, urban, or IDP camp locations. The majority of respondents are in rural locations, followed by urban locations, and with 2 in IDP camps. 
 
 ```{r plt_location, dpi=300, include=T, message=FALSE, warning=FALSE, fig.height=3, fig.align="center", fig.cap='Location of survey respondents'}
 
 setwd("C:/Users/Hannah/Desktop/hti-needs-assessment")
 
 data_dir <- "G:/Shared drives/country-responses/2021-hti-001/GIS/2_Active_Data/205_assm/"
-f_name <- "hti_assm_srvy_tab_s2_OCHA_hh_BASE_Outil_Evaluation_initiale_rapide_des_besoins.xlsx"
+f_name <- "BASE_Outil_dévaluation_initiale_rapide_des_besoins_25.08.2021.xlsx"
 data <- read_excel(paste0(data_dir, f_name))
+
+# Some basic stats
+#nrow(data) # Number of respondents
+#unique(data$`Date de l'évaluation`) # Dates being surveyed
 
 ggplot(data, aes(x = `Lieu (village/communauté)`))+
   geom_bar(fill = "#0E4D64")+
@@ -66,7 +70,7 @@ Looking at the proportion broken down by age and sex, we see that the respondent
 ggplot(data, aes(x = `Lieu (village/communauté)`, fill = `Âge de la personne interrogée`))+
   geom_bar(position='fill')+
   ylab('Proportion of respondents') +
-  scale_fill_manual(values=c("#0A2F51","#0E4D64", '#137177', '#188977', '#1D9A6C'), na.value = "red") +
+  scale_fill_manual(values=c("#0A2F51","#0E4D64", '#137177', '#188977', '#1D9A6C', '#39A96B'), na.value = "red") +
   theme_minimal() + 
   stat_count(geom = "text", 
              aes(label = stat(count)),
@@ -93,12 +97,13 @@ Most respondents are most in need of housing; food; and water, hygiene, and sani
 
 # What are your 3 biggest needs?
 df_priorities <- data %>% 
-  select(c(18:26)) %>% 
+  select(c(21:29)) %>%
+  mutate_each_(funs(as.numeric), c(2:9)) %>%
   adorn_totals('row')
 
-df_priority_total <- data.frame(t(df_priorities)) %>% select('X232')
+df_priority_total <- data.frame(t(df_priorities)) %>% select('X307')
 df_priority_total <- cbind(Priority = str_split_fixed(rownames(df_priority_total), '/', 2)[,2], df_priority_total)[-1,]
-df_priority_total <- df_priority_total %>% rename(Total = X232)
+df_priority_total <- df_priority_total %>% rename(Total = X307)
 df_priority_total$Total <- as.numeric(df_priority_total$Total)
 
 plt_priority <- ggplot(df_priority_total, aes(x = reorder(Priority, Total), y = Total)) + 
