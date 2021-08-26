@@ -21,6 +21,8 @@ editor_options:
 ## Haiti Needs Assessment: Survey Analysis
 Last updated `r Sys.Date()`
 
+**This page is a work in progress.**
+
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
 library(kableExtra)
 library(knitr)
@@ -35,7 +37,7 @@ knitr::opts_chunk$set(include = FALSE) # do not print output by default
 
 ### Summary
 
-This document provides an overview of an initial rapid needs assessment of affected populations in Haiti. This survey contains responses from 231 affected stakeholders, surveyed between August 18th - August 23rd, 2021. Responses provide an overview of sectoral needs at the household level.
+This page provides an overview of an initial rapid needs assessment of affected populations in Haiti. This survey contains responses from 231 affected stakeholders, surveyed between August 18th - August 23rd, 2021. Responses provide an overview of sectoral needs at the household level.
 
 ### Basic respondent information
 
@@ -85,7 +87,7 @@ ggplot(data, aes(x = `Lieu (village/communauté)`, fill = `Sexe de la personne i
 
 ### Top priorities
 
-Most respondents are most in need of housing, food, and sanitation. 
+Most respondents are most in need of housing; food; and water, hygiene, and sanitation. 
 
 ```{r top_needs, dpi=300, include=T, message=FALSE, warning=FALSE, fig.height=3, fig.align="center", fig.cap='Summary of top needs'}
 
@@ -110,21 +112,3 @@ plt_priority
 
 ```
 
-To do: 
-- What type of aid do you prefer?
-
-
-### WASH
-
-- Where do you collect potable water?
-- How many L of water do you collect in a day? Is it enough? What do you do with this water?
-
-### Food safety
-
-### Housing / non-food items
-
-### Means of subsistence 
-
-### Protection
-
-### Communication
